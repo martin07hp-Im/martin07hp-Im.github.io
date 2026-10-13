@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PC Bygger</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 650px; margin: 40px auto; padding: 0 16px; background-color: black; color: rgb(197, 17, 17); }
+        h1, h2, h3 { color: whitesmoke; }
+        label { display: block; margin-top: 14px; font-weight: bold; }
+        label.valg { font-weight: normal; margin-top: 6px; }
+        select, input[type="number"] { width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box; }
+        button { margin-top: 20px; margin-right: 8px; padding: 10px 16px; cursor: pointer; }
+        #melding { margin-top: 16px; font-weight: bold; }
+        .ok { color: whitesmoke; }
+        .feil { color: whitesmoke; }
+
+        /* Antall med - og + */
+        .antall-rad { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
+        .antall-rad button { margin: 0; padding: 8px 18px; font-size: 18px; font-weight: bold; }
+        .antall-rad input { margin-top: 0; text-align: center; font-size: 16px; }
+
+        /* Navigasjonsbar */
+        ul { list-style: none; margin: 0; padding: 0; }
+        nav > ul { display: flex; background: #222; }
+        nav li { position: relative; }
+        nav a { display: block; padding: 12px 18px; color: #fff; text-decoration: none; }
+        nav a:hover { background: #444; }
+        nav li ul { display: none; position: absolute; background: #333; min-width: 150px; z-index: 10; }
+        nav li:hover ul { display: block; }
+
+        /* Tilbudstabell */
+        #tilbud { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        #tilbud th, #tilbud td { padding: 8px; border-bottom: 1px solid #888; text-align: left; }
+        #tilbud td:last-child, #tilbud th:last-child { text-align: right; white-space: nowrap; }
+
+        /* Versjoner av delene */
+        html { scroll-behavior: smooth; }
+        .deler { margin-top: 60px; }
+        .deler h3 { margin-top: 28px; }
+        .deler table { width: 100%; border-collapse: collapse; }
+        .deler td { padding: 8px; border-bottom: 1px solid #888; }
+        .deler td:last-child { text-align: right; white-space: nowrap; }
+
+        /* ===== Tema: røde overskrifter, knapper og nedtrekkslister ===== */
+        h1, h2, h3 {
+            color: #cc0000;
+        }
+
+        h1, h2 {
+            text-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+        }
+
+        select,
+        button,
+        input[type="number"] {
+            background: rgba(0, 0, 0, 0.85) !important;
+            color: #fff !important;
+            border: 1px solid #b30000 !important;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        select option {
+            background: #111;
+            color: #fff;
+        }
+
+        button:hover {
+            background: #b30000 !important;
+            box-shadow: 0 0 10px #ff0000;
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        select:focus,
+        input:focus {
+            outline: none;
+            border-color: #ff0000 !important;
+            box-shadow: 0 0 8px #ff0000;
+        }
+
+        input[type="checkbox"] {
+            accent-color: #b30000;
+        }
+
+        @media print {
+            body { background: white; color: black; }
+            nav, button, canvas { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <ul>
+            <li><a href="#">Hjem</a></li>
+            <li><a href="#prosessor">Prosessor</a>
+                <ul>
+                    <li><a href="#cpu-intel">Intel</a></li>
+                    <li><a href="#cpu-amd">AMD</a></li>
+                </ul>
+            </li>
+            <li><a href="#skjermkort">Skjermkort</a>
+                <ul>
+                    <li><a href="#gpu-nvidia">NVIDIA</a></li>
+                    <li><a href="#gpu-amd">AMD</a></li>
+                </ul>
+            </li>
+            <li><a href="#ram-versjoner">RAM</a></li>
+            <li><a href="#PSU-versjoner">PSU</a></li>
+        </ul>
+    </nav>
+
+    <h1>PC Bygger</h1>
+
+    <label for="GPU">GPU:</label>
+    <select id="GPU">
+        <option value="4490" data-watt="550" data-lager="På lager">RTX 5060 - 4490 kr</option>
+        <option value="6490" data-watt="600" data-lager="På lager">RTX 5060Ti - 6490 kr</option>
+        <option value="8990" data-watt="650" data-lager="På lager">RTX 5070 - 8990 kr</option>
+        <option value="11990" data-watt="750" data-lager="3-5 dager">RTX 5070Ti - 11990 kr</option>
+        <option value="15990" data-watt="850" data-lager="3-5 dager">RTX 5080 - 15990 kr</option>
+        <option value="49990" data-watt="1000" data-lager="Bestillingsvare">RTX 5090 - 49990 kr</option>
+        <option value="6190" data-watt="450" data-lager="På lager">Radeon RX 9060XT - 6190 kr</option>
+        <option value="7590" data-watt="650" data-lager="På lager">Radeon RX 9070 - 7590 kr</option>
+        <option value="8990" data-watt="750" data-lager="3-5 dager">Radeon RX 9070XT - 8990 kr</option>
+        <option value="14560" data-watt="800" data-lager="3-5 dager">Radeon RX 7900XTX - 14560 kr</option>
+    </select>
+
+    <label for="ram">RAM:</label>
+    <select id="ram">
+        <option value="3634">16 GB DDR5 - 3634 kr</option>
+        <option value="6590">32 GB DDR5 - 6590 kr</option>
+        <option value="14800">64 GB DDR5 - 14800 kr</option>
+    </select>
+
+    <label for="CPU">CPU:</label>
+    <select id="CPU">
+        <option value="1838" data-merke="intel">i5-14400F - 1838 kr</option>
+        <option value="4481" data-merke="intel">i7-14700K - 4481 kr</option>
+        <option value="6390" data-merke="intel">i9-14900K - 6390 kr</option>
+        <option value="3989" data-merke="amd">Ryzen 5 7800X3D - 3989 kr</option>
+        <option value="4890" data-merke="amd">Ryzen 7 9800X3D - 4890 kr</option>
+        <option value="6989" data-merke="amd">Ryzen 9 9950X3D - 6989 kr</option>
+    </select>
+
+    <label for="motherboard">Hovedkort:</label>
+    <select id="motherboard">
+        <option value="0" data-sokkel="LGA1700">Intel LGA1700</option>
+        <option value="0" data-sokkel="AM5">AMD AM5</option>
+    </select>
+
+    <label for="PSU">PSU:</label>
+    <select id="PSU">
+        <option value="1189" data-watt="750">750W power supply - 1189 kr</option>
+        <option value="1318" data-watt="850">850W power supply - 1318 kr</option>
+        <option value="1690" data-watt="1000">1000W power supply - 1690 kr</option>
+        <option value="2499" data-watt="1200">1200W power supply - 2499 kr</option>
+    </select>
+
+    <label for="Storage">Storage:</label>
+    <select id="Storage">
+        <option value="3390">1 TB NVMe SSD - 3390 kr</option>
+        <option value="5658">2 TB NVMe SSD - 5658 kr</option>
+        <option value="12990">4 TB NVMe SSD - 12990 kr</option>
+    </select>
+
+    <label for="antall">Antall maskiner:</label>
+    <div class="antall-rad">
+        <button type="button" onclick="endreAntall(-1)">−</button>
+        <input type="number" id="antall" value="1" min="1">
+        <button type="button" onclick="endreAntall(1)">+</button>
+    </div>
+    <p>Kjøper du 5 eller flere maskiner, får du 25 % rabatt når du trykker «Legg til bud».</p>
+
+    <h3>Tillegg (per maskin)</h3>
+    <label class="valg"><input type="checkbox" class="tillegg" value="499"> Windows-installasjon - 499 kr</label>
+    <label class="valg"><input type="checkbox" class="tillegg" value="899"> Utvidet garanti (3 år) - 899 kr</label>
+    <label class="valg"><input type="checkbox" class="tillegg" value="1500"> Supportavtale - 1500 kr</label>
+    <label class="valg"><input type="checkbox" class="tillegg" value="199"> Levering - 199 kr</label>
+
+    <button onclick="beregnPris()">Beregn pris</button>
+    <button onclick="sjekkKompatibilitet()">Sjekk kompatibilitet</button>
+    <button onclick="lagTilbud()">Legg til rabatt</button>
+    <button onclick="window.print()">Skriv ut dokument</button>
+    <button onclick="tilbakestill()">Tilbakestill</button>
+    <button onclick="gaTilBetaling()">Gå til betaling</button>
+
+    <h2>Totalpris: <span id="pris">0</span> kr</h2>
+    <p id="melding"></p>
+
+    <table id="tilbud">
+        <thead>
+            <tr><th>Komponent</th><th>Produkt</th><th>Pris</th></tr>
+        </thead>
+        <tbody id="tilbudRader"></tbody>
+    </table>
+
+    <p>Pris eks. mva: <span id="eksMva">0 kr</span></p>
+    <p>Mva (25 %): <span id="mva">0 kr</span></p>
+    <h2>Totalt inkl. mva: <span id="inklMva">0 kr</span></h2>
+    <p id="rabattTekst"></p>
+
+    <!-- PROSESSOR -->
+    <section class="deler" id="prosessor">
+        <h2>Prosessor</h2>
+
+        <h3 id="cpu-intel">Intel</h3>
+        <table>
+            <tr><td>Core i5-14400F</td><td>1838 kr</td></tr>
+            <tr><td>Core i7-14700K</td><td>4481 kr</td></tr>
+            <tr><td>Core i9-14900K</td><td>6390 kr</td></tr>
+        </table>
+
+        <h3 id="cpu-amd">AMD</h3>
+        <table>
+            <tr><td>Ryzen 5 7800X3D</td><td>3989 kr</td></tr>
+            <tr><td>Ryzen 7 9800X3D</td><td>4890 kr</td></tr>
+            <tr><td>Ryzen 9 9950X3D</td><td>6989 kr</td></tr>
+        </table>
+    </section>
+
+    <!-- SKJERMKORT -->
+    <section class="deler" id="skjermkort">
+        <h2>Skjermkort</h2>
+
+        <h3 id="gpu-nvidia">NVIDIA</h3>
+        <table>
+            <tr><td>RTX 5060</td><td>4490 kr</td></tr>
+            <tr><td>RTX 5060 Ti</td><td>6490 kr</td></tr>
+            <tr><td>RTX 5070 / Recommended</td><td>8990 kr</td></tr>
+            <tr><td>RTX 5070 Ti</td><td>11990 kr</td></tr>
+            <tr><td>RTX 5080</td><td>15990 kr</td></tr>
+            <tr><td>RTX 5090</td><td>49990 kr</td></tr>
+        </table>
+
+        <h3 id="gpu-amd">AMD</h3>
+        <table>
+            <tr><td>Radeon RX 9060 XT</td><td>6190 kr</td></tr>
+            <tr><td>Radeon RX 9070</td><td>7590 kr</td></tr>
+            <tr><td>Radeon RX 9070 XT / Recommended</td><td>8990 kr</td></tr>
+            <tr><td>Radeon RX 7900XTX</td><td>14560 kr</td></tr>
+        </table>
+    </section>
+
+    <!-- RAM -->
+    <section class="deler" id="ram-versjoner">
+        <h2>RAM</h2>
+
+        <h3>Corsair</h3>
+        <table>
+            <tr><td>Vengeance 16 GB DDR5 / 6000MHZ</td><td>3634 kr</td></tr>
+            <tr><td>Vengeance 32 GB DDR5 / 6000MHZ / Recommended</td><td>6590 kr</td></tr>
+            <tr><td>Vengeance 64 GB DDR5 / 6000MHZ</td><td>14800 kr</td></tr>
+        </table>
+
+        <h3>G.Skill</h3>
+        <table>
+            <tr><td>Trident Z5 16 GB DDR5 / 6000MHZ</td><td>3790 kr</td></tr>
+            <tr><td>Trident Z5 32 GB DDR5 / 6000MHZ / Recommended</td><td>6790 kr</td></tr>
+        </table>
+
+        <!-- Kingston: lim inn din egen tabell her -->
+    </section>
+
+    <!-- PSU -->
+    <section class="deler" id="PSU-versjoner">
+        <h2>PSU</h2>
+        <table>
+            <tr><td>750W power supply</td><td>1189 kr</td></tr>
+            <tr><td>850W power supply</td><td>1318 kr</td></tr>
+            <tr><td>1000W power supply</td><td>1690 kr</td></tr>
+            <tr><td>1200W power supply</td><td>2499 kr</td></tr>
+        </table>
+    </section>
+
+    <!-- Navigasjonsbar nederst på siden -->
+    <nav>
+        <ul>
+            <li><a href="#">Hjem</a></li>
+
+            <li>
+                <a href="#prosessor">Prosessor</a>
+                <ul>
+                    <li><a href="#cpu-intel">Intel</a></li>
+                    <li><a href="#cpu-amd">AMD</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#skjermkort">Skjermkort</a>
+                <ul>
+                    <li><a href="#gpu-nvidia">NVIDIA</a></li>
+                    <li><a href="#gpu-amd">AMD</a></li>
+                </ul>
+            </li>
+
+            <li><a href="#ram-versjoner">RAM</a></li>
+            <li><a href="#PSU-versjoner">PSU</a></li>
+        </ul>
+    </nav>
+
+    <canvas id="regn"></canvas>
+
+    <script>
+        const MVA = 0.25;
+
+        function valgt(id) {
+            return document.getElementById(id).selectedOptions[0];
+        }
+
+        function kr(tall) {
+            return Math.round(tall).toLocaleString("nb-NO") + " kr";
+        }
+
+        // Øker eller minker antall (aldri under 1). Prisen oppdateres UTEN rabatt.
+        function endreAntall(endring) {
+            const felt = document.getElementById("antall");
+            const nytt = (Number(felt.value) || 1) + endring;
+            felt.value = Math.max(1, nytt);
+            oppdaterPris();
+        }
+
+        // Regner ut tilbudet. medRabatt = true bare når man trykker "Legg til rabatt".
+        function regnUt(medRabatt) {
+            const antall = Math.max(1, Number(document.getElementById("antall").value) || 1);
+
+            const komponenter = [
+                ["GPU", "GPU"],
+                ["RAM", "ram"],
+                ["CPU", "CPU"],
+                ["Hovedkort", "motherboard"],
+                ["PSU", "PSU"],
+                ["Lagring", "Storage"]
+            ];
+
+            let enhetspris = 0;
+            let rader = "";
+
+            komponenter.forEach(function ([navn, id]) {
+                const valg = valgt(id);
+                const pris = Number(valg.value) || 0;
+                enhetspris += pris;
+
+                const lager = valg.dataset.lager ? " (" + valg.dataset.lager + ")" : "";
+                rader += "<tr><td>" + navn + "</td><td>" + valg.textContent + lager +
+                         "</td><td>" + kr(pris) + "</td></tr>";
+            });
+
+            document.querySelectorAll(".tillegg:checked").forEach(function (boks) {
+                const pris = Number(boks.value);
+                enhetspris += pris;
+                rader += "<tr><td>Tillegg</td><td>" + boks.parentElement.textContent.trim() +
+                         "</td><td>" + kr(pris) + "</td></tr>";
+            });
+
+            document.getElementById("tilbudRader").innerHTML = rader;
+
+            let sum = enhetspris * antall;
+            let rabattTekst = "";
+
+            if (antall >= 5) {
+                if (medRabatt) {
+                    // 25 % rabatt legges til når "Legg til rabatt" trykkes
+                    const rabatt = sum * 0.25;
+                    sum -= rabatt;
+                    rabattTekst = "Mengderabatt 25 % (5 eller flere stk): -" + kr(rabatt);
+                } else {
+                    rabattTekst = "Du har rett til 25 % rabatt. Trykk «Legg til tilbud» for å bruke den.";
+                }
+            }
+
+            const mva = sum * MVA;
+
+            document.getElementById("pris").textContent = Math.round(sum + mva);
+            document.getElementById("eksMva").textContent = kr(sum);
+            document.getElementById("mva").textContent = kr(mva);
+            document.getElementById("inklMva").textContent = kr(sum + mva);
+            document.getElementById("rabattTekst").textContent = rabattTekst;
+
+            sjekkKompatibilitet();
+        }
+
+        // Oppdaterer prisen uten rabatt
+        function oppdaterPris() {
+            regnUt(false);
+        }
+
+        // "Beregn pris"-knappen: pris uten rabatt
+        function beregnPris() {
+            regnUt(false);
+        }
+
+        // "Legg til rabatt"-knappen: pris MED rabatt
+        function lagTilbud() {
+            regnUt(true);
+        }
+
+        // "Tilbakestill"-knappen: nullstiller valg, rabatt og resultat
+        function tilbakestill() {
+            document.querySelectorAll("select").forEach(function (s) {
+                s.selectedIndex = 0;
+            });
+            document.getElementById("antall").value = 1;
+            document.querySelectorAll(".tillegg").forEach(function (boks) {
+                boks.checked = false;
+            });
+
+            // Tøm resultatet
+            document.getElementById("pris").textContent = "0";
+            document.getElementById("tilbudRader").innerHTML = "";
+            document.getElementById("eksMva").textContent = "0 kr";
+            document.getElementById("mva").textContent = "0 kr";
+            document.getElementById("inklMva").textContent = "0 kr";
+            document.getElementById("rabattTekst").textContent = "";
+            document.getElementById("melding").textContent = "";
+        }
+
+        function sjekkKompatibilitet() {
+            const feil = [];
+
+            const merke = valgt("CPU").dataset.merke;
+            const sokkel = valgt("motherboard").dataset.sokkel;
+
+            const cpuOk = (merke === "intel" && sokkel === "LGA1700") ||
+                          (merke === "amd" && sokkel === "AM5");
+            if (!cpuOk) {
+                feil.push("Prosessoren passer ikke til hovedkortet (Intel krever LGA1700, AMD krever AM5).");
+            }
+
+            const kravWatt = Number(valgt("GPU").dataset.watt) || 0;
+            const psuWatt = Number(valgt("PSU").dataset.watt) || 0;
+            if (psuWatt < kravWatt) {
+                feil.push("Strømforsyningen er for svak: skjermkortet anbefaler minst " +
+                          kravWatt + "W, du har valgt " + psuWatt + "W.");
+            }
+
+            const melding = document.getElementById("melding");
+            if (feil.length === 0) {
+                melding.className = "ok";
+                melding.textContent = "Alle komponentene er kompatible ✓";
+            } else {
+                melding.className = "feil";
+                melding.innerHTML = feil.map(function (f) { return "⚠ " + f; }).join("<br>");
+            }
+
+            return feil.length === 0;
+        }
+
+        // Når noe endres, oppdateres prisen uten rabatt
+        document.querySelectorAll("select, .tillegg").forEach(function (el) {
+            el.addEventListener("change", oppdaterPris);
+        });
+        document.getElementById("antall").addEventListener("input", oppdaterPris);
+
+        // Vis en pris med en gang siden åpnes
+        oppdaterPris();
+    </script>
+
+    <script>
+        const c = document.getElementById("regn"), g = c.getContext("2d");
+        c.style.cssText = "position:fixed;top:0;left:0;z-index:-1";
+        let y = [];
+
+        function tilpass() {
+            c.width = innerWidth;
+            c.height = innerHeight;
+            y = Array.from({ length: Math.floor(c.width / 16) }, () => Math.random() * c.height);
+        }
+        tilpass();
+        addEventListener("resize", tilpass);
+
+        setInterval(() => {
+            g.fillStyle = "rgba(0,0,0,0.1)";
+            g.fillRect(0, 0, c.width, c.height);
+            g.fillStyle = "#c51111";
+            g.font = "16px monospace";
+
+            y.forEach((v, i) => {
+                const x = i * 16;
+                if (x > c.width / 2 - 340 && x < c.width / 2 + 340) return;
+                g.fillText(Math.random() < 0.5 ? "0" : "1", x, v);
+                y[i] = v > c.height && Math.random() > 0.9 ? 0 : v + 16;
+            });
+        }, 60);
+    </script>
+</body>
+</html>
